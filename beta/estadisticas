@@ -1,0 +1,107 @@
+
+select h.nombre_linea_investigacion, a.id_trabajo_pk, a.titulo_trabajo, e.primer_nombre, e.segundo_nombre, e.primer_apellido, e.segundo_apellido, f.correo  from tbl_trabajo a
+join tbl_tipo_trabajo b on b.id_tipo_trabajo_pk=a.id_tipo_trabajo_fk
+join tbl_usuario_trabajo c on c.id_trabajo_fk=a.id_trabajo_pk
+join tbl_usuario d on d.id_usuario_pk=c.id_usuario_fk
+join tbl_persona e on e.id_persona_pk=d.id_persona_fk
+join tbl_correo f on f.id_persona_fk=e.id_persona_pk
+join tbl_tematica g on g.id_tematica_pk=a.id_tematica_fk
+join tbl_linea_investigacion h on h.id_linea_investigacion_pk=g.id_linea_investigacion_fk
+where 1=1 and a.id_estado_fk=6 order by h.nombre_linea_investigacion ASC
+
+/*********************************** Por trabajo ***********************************************/
+select count(a.id_trabajo_pk) as total from tbl_trabajo a
+join tbl_tematica b on b.id_tematica_pk=a.id_tematica_fk
+join tbl_linea_investigacion c on c.id_linea_investigacion_pk=b.id_linea_investigacion_fk
+join tbl_congreso_linea_investigacion d on d.id_linea_investigacion_pk=c.id_linea_investigacion_pk
+where d.id_congreso_pk='1'
+
+/*********************************** Por trabajo aceptado ***********************************************/
+select count(a.id_trabajo_pk) as total from tbl_trabajo a
+join tbl_tematica b on b.id_tematica_pk=a.id_tematica_fk
+join tbl_linea_investigacion c on c.id_linea_investigacion_pk=b.id_linea_investigacion_fk
+join tbl_congreso_linea_investigacion d on d.id_linea_investigacion_pk=c.id_linea_investigacion_pk
+where d.id_congreso_pk='1' and a.id_estado_fk='6'
+
+/*********************************** Por trabajo rechazado ***********************************************/
+select count(a.id_trabajo_pk) as total from tbl_trabajo a
+join tbl_tematica b on b.id_tematica_pk=a.id_tematica_fk
+join tbl_linea_investigacion c on c.id_linea_investigacion_pk=b.id_linea_investigacion_fk
+join tbl_congreso_linea_investigacion d on d.id_linea_investigacion_pk=c.id_linea_investigacion_pk
+where d.id_congreso_pk='1' and a.id_estado_fk='2'
+
+/*********************************** Por persona ***********************************************/
+select count(f.id_usuario_pk) as total from tbl_trabajo a
+join tbl_tematica b on b.id_tematica_pk=a.id_tematica_fk
+join tbl_linea_investigacion c on c.id_linea_investigacion_pk=b.id_linea_investigacion_fk
+join tbl_congreso_linea_investigacion d on d.id_linea_investigacion_pk=c.id_linea_investigacion_pk
+join tbl_usuario_trabajo e on e.id_trabajo_fk=a.id_trabajo_pk
+join tbl_usuario f on f.id_usuario_pk=e.id_usuario_fk
+where d.id_congreso_pk='1'
+
+
+
+/*********************************** Por tipo de trabajo ***********************************************/
+select b.id_tipo_trabajo_pk, b.nombre_tipo_trabajo, count(a.id_trabajo_pk) as total from tbl_tipo_trabajo b
+join tbl_trabajo a on b.id_tipo_trabajo_pk=a.id_tipo_trabajo_fk
+where 1=1 group by b.id_tipo_trabajo_pk 
+
+/*********************************** Por estado de trabajo ***********************************************/
+select a.id_estado_fk,b.estado, count(a.id_trabajo_pk) from tbl_trabajo a 
+join tbl_estado b on b.id_estado_pk=a.id_estado_fk
+where 1=1 group by a.id_estado_fk
+
+/***********************************Trabajos Aceptados Por linea de investigación ***********************************************/
+select c.id_linea_investigacion_pk, c.nombre_linea_investigacion, count(a.id_trabajo_pk) from tbl_trabajo a 
+join tbl_tematica b on b.id_tematica_pk=a.id_tematica_fk
+join tbl_linea_investigacion c on c.id_linea_investigacion_pk=b.id_linea_investigacion_fk
+join tbl_congreso_linea_investigacion d on d.id_linea_investigacion_pk=c.id_linea_investigacion_pk
+where 1=1  and d.id_congreso_pk='1' group by c.id_linea_investigacion_pk
+
+/***********************************Trabajos Aceptados Por temática ***********************************************/
+select b.id_tematica_pk, b.nombre_tematica, count(a.id_trabajo_pk) from tbl_trabajo a 
+join tbl_tematica b on b.id_tematica_pk=a.id_tematica_fk
+join tbl_congreso_linea_investigacion c on c.id_linea_investigacion_pk=b.id_linea_investigacion_fk
+where 1=1  and c.id_congreso_pk='1' group by b.id_tematica_pk
+
+/***********************************Trabajos Aceptados Tipo de trabajo Por linea de investigación ***********************************************/
+select c.id_linea_investigacion_pk, c.nombre_linea_investigacion, d.id_tipo_trabajo_pk, d.nombre_tipo_trabajo, count(a.id_trabajo_pk) from tbl_trabajo a 
+join tbl_tematica b on b.id_tematica_pk=a.id_tematica_fk
+join tbl_linea_investigacion c on c.id_linea_investigacion_pk=b.id_linea_investigacion_fk
+join tbl_tipo_trabajo d on d.id_tipo_trabajo_pk=a.id_tipo_trabajo_fk
+where 1=1 group by d.id_tipo_trabajo_pk
+
+/***********************************Trabajos Aceptados Tipo de trabajo Por temática ***********************************************/
+select b.id_tematica_pk, b.nombre_tematica, d.id_tipo_trabajo_pk, d.nombre_tipo_trabajo, count(a.id_trabajo_pk) from tbl_trabajo a 
+join tbl_tematica b on b.id_tematica_pk=a.id_tematica_fk
+join tbl_tipo_trabajo d on d.id_tipo_trabajo_pk=a.id_tipo_trabajo_fk
+where 1=1 group by d.id_tipo_trabajo_pk
+
+
+/*********************************** Personas por país ***********************************************/
+select a.id_pais_fk, b.nombre_pais, count(a.id_persona_pk) from tbl_persona a 
+join tbl_pais b on b.id_pais_pk=a.id_pais_fk
+where 1=1 group by b.id_pais_pk
+
+/*********************************** Por tipo de persona ***********************************************/
+select a.id_tipo_persona_fk, b.nombre_tipo_persona, count(a.id_persona_pk) from tbl_persona a 
+join tbl_tipo_persona b on b.id_tipo_persona_pk=a.id_tipo_persona_fk
+where 1=1 group by b.id_tipo_persona_pk
+
+/*********************************** Por institucion no UNAH***********************************************/
+select b.id_institucion_pk, b.nombre_institucion, count(a.id_persona_pk) from tbl_persona_institucion a 
+join tbl_institucion b on b.id_institucion_pk=a.id_institucion_pk
+where 1=1 group by b.id_institucion_pk
+
+/*********************************** Por depto UNAH***********************************************/
+select  c.id_carrera_pk, c.nombre_carrera,count(a.id_persona_pk) from tbl_persona_institucion a 
+join tbl_institucion_facultad_carrera b on b.id_institucion_facultad_carrera=a.id_institucion_facultad_carrera
+join tbl_carrera c on c.id_carrera_pk=b.id_carrera_fk
+join tbl_institucion d on d.id_institucion_pk=b.id_institucion_fk
+where 1=1 group by c.id_carrera_pk
+
+
+select a.id_trabajo_pk, a.titulo_trabajo, c.nombre_tematica from tbl_tipo_trabajo b
+join tbl_trabajo a on b.id_tipo_trabajo_pk=a.id_tipo_trabajo_fk
+join tbl_tematica c on c.id_tematica_pk=a.id_tematica_fk 
+where 1=1 and b.id_tipo_trabajo_pk='1' order by c.nombre_tematica ASC
